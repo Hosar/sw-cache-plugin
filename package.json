@@ -6,7 +6,7 @@
   "scripts": {
     "test": "DEBUG=test,app ava --verbose",
     "prepublish": "babel src --out-dir lib && mkdir lib/template && cp src/template/sw-cache.tmpl lib/template",    
-    "build": "babel src --out-dir lib && cp src/template/sw-cache.tmpl lib/template"
+    "build": "babel src --out-dir lib && mkdir lib/template && cp src/template/sw-cache.tmpl lib/template"
   },
   "repository": {
     "type": "git",
