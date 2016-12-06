@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "DEBUG=test,app ava --verbose",
-    "prepublish": "babel src --out-dir lib",
+    "prepublish": "babel src --out-dir lib && mkdir lib/template && cp src/template/sw-cache.tmpl lib/template",
     "build": "cp src/template/sw-cache.tmpl lib/template && babel src --out-dir lib"
   },
   "repository": {
