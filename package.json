@@ -34,6 +34,9 @@
   "engines": {
     "node": ">=5"
   },
+  "peerDependencies": {
+    "webpack": "^1.1.0 || ^2 || ^2.1.0-beta"
+  },
   "dependencies": {
     "ava": "^0.17.0",
     "babel-cli": "^6.18.0",

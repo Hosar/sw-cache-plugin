@@ -1,7 +1,7 @@
 import test from 'ava';
 import webpack from 'webpack';
 import path from 'path';
-import WebpackSwCache from '../src/index.js';
+import SwCachePlugin from '../src/index.js';
 import $debug from 'debug';
 import sinon from 'sinon';
 import fs from 'fs';
@@ -46,7 +46,7 @@ const testAssets = ['swRegistry-b8305b0556d22425eb92.js',
   
 
 test('should filter the assets according to ignore', t => {
-  const plugin = new WebpackSwCache(pluginOptions);  
+  const plugin = new SwCachePlugin(pluginOptions);  
                       
   const filteredAssets = plugin.ignoreAssets(testAssets);
   t.is(filteredAssets.length,3);
@@ -55,7 +55,7 @@ test('should filter the assets according to ignore', t => {
 test('should set the output path to all the assets', t => {
   const swRegistryExpected = 'http://localhost:4200/dist/swRegistry-b8305b0556d22425eb92.js';
   const appExpected = 'http://localhost:4200/dist/app-b8305b0556d22425eb92.js';
-  const plugin = new WebpackSwCache(pluginOptions);
+  const plugin = new SwCachePlugin(pluginOptions);
   const publicPath = 'http://localhost:4200/dist/';
   const assetsWithPath = plugin.setPathToAssets(publicPath,testAssets);
   
@@ -67,7 +67,7 @@ test('should set the output path to all the assets', t => {
 });
 
 test('should thow an exception if options is provided an is not an array', t => {  
-  const plugin = new WebpackSwCache({ignore:/.*$/});  
+  const plugin = new SwCachePlugin({ignore:/.*$/});  
   
   const error = t.throws(() => {
       plugin.ignoreAssets([]);      
@@ -77,7 +77,7 @@ test('should thow an exception if options is provided an is not an array', t => 
 });
 
 test('should add additional paths to assets', t => {
-  const plugin = new WebpackSwCache(pluginOptions);
+  const plugin = new SwCachePlugin(pluginOptions);
   const origin = ['http://localhost:4200/','http://localhost:4200/dist'];
   const assets = 
   ["http://localhost:4200/swRegistry-b8305b0556d22425eb92.js", 
@@ -94,7 +94,7 @@ test('should add additional paths to assets', t => {
 });
 
 test('given a text instead of an array for additional paths should throw an exception', t => {
-  const plugin = new WebpackSwCache(pluginOptions);
+  const plugin = new SwCachePlugin(pluginOptions);
   const additionals = 'http://localhost:4200/';
 
   const error = t.throws(() => {
@@ -106,7 +106,7 @@ test('given a text instead of an array for additional paths should throw an exce
 });
 
 test('should show the list of assets to be cached', t => {
-  const plugin = new WebpackSwCache(pluginOptions);
+  const plugin = new SwCachePlugin(pluginOptions);
   const titlePlusEntries = 5;
   const cacheEntries = 
   ["'http://localhost:4200/swRegistry-b8305b0556d22425eb92.js'",
@@ -122,7 +122,7 @@ test('should show the list of assets to be cached', t => {
 });
 
 test('should get the hashes that identify the request to save in cache', t => {
-  const plugin = new WebpackSwCache(pluginOptions);
+  const plugin = new SwCachePlugin(pluginOptions);
   const hash = '0c9fe69fceef3af0289f';
   const assets = ['swRegistry-0c9fe69fceef3af0289f.js',
                   '1b2bcaeebdec4584386bdcc241897209.css',
@@ -138,7 +138,7 @@ test('should get the hashes that identify the request to save in cache', t => {
 });
 
 test('given an Array should format as string with apostrophes', t => {
-  const plugin = new WebpackSwCache(pluginOptions);
+  const plugin = new SwCachePlugin(pluginOptions);
   const arr = ['0c9fe69fceef3af0289f',
                '1b2bcaeebdec4584386bdcc241897209',
                'e02a995e6786d8aa55ee397094f88d16'];
@@ -152,7 +152,7 @@ test.cb('should generate AssetsManager file', t => {
   const compiler = webpack(webpackConfig());
   const config = webpackConfig();  
 
-  const plugin = new WebpackSwCache(pluginOptions);     
+  const plugin = new SwCachePlugin(pluginOptions);     
   plugin.apply(compiler);
 
   compiler.run((err, stats) => {

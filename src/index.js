@@ -1,3 +1,3 @@
-import WebpackSwCache from './webpack.sw.cache';
+import SwCachePlugin from './swCachePlugin';
 
-module.exports = WebpackSwCache;
+module.exports = SwCachePlugin;

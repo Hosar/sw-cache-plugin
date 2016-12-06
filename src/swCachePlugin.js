@@ -12,7 +12,7 @@ const debug = $debug('app');
              
 const toClass = {}.toString;           
 
-class WebpackSwCache {
+class SwCachePlugin {
     constructor(options) {
         this.options = {
             ...options,
@@ -127,4 +127,4 @@ class WebpackSwCache {
     }
 }
 
-module.exports = WebpackSwCache;
+module.exports = SwCachePlugin;
