@@ -1,7 +1,7 @@
 {
   "name": "sw-cache-plugin",
-  "version": "0.1.0",
-  "description": "Webpack plugin that allows to cache generated assets in your on service worker.",
+  "version": "0.1.1",
+  "description": "Webpack plugin that allows to cache generated assets in your own service worker.",
   "main": "lib/index.js",
   "scripts": {
     "test": "DEBUG=test,app ava --verbose",
