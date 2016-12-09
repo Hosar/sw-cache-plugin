@@ -54,20 +54,25 @@ self.addEventListener('activate', event => {
 ```
 ## Configuration
 
-Plugin options:
+**Plugin options:**
 - `cacheName: [String]` name for your cache object.
 - `ignore: [Array]` **regex** to avoid assets to be included in the cache entries.
 - `include: [Array]` Additionals strings url to be included in the cache.
 
-Methods:
+**Methods:**
 - `addAllToCache()` add all webpack generated assets to browser app cache.
 - `removeNotInAssets()` remove all current request that are in app cache, but not in the current
                         webpack generated assets.
 
-Properties:
+**Properties:**
 - `cacheEntries [Array]` contains an array with the url for all generated assets to be cached.
 - `cacheName [String]` app cache name.
+
+**Webpack dev server support:**
+- add [write-file-webpack-plugin][69fb7c2c] to work with webpack dev server.
  
+
+  [69fb7c2c]: https://github.com/gajus/write-file-webpack-plugin "write-file-plugin"
 
 
 [sw-precache-webpack]: https://github.com/goldhand/sw-precache-webpack-plugin
