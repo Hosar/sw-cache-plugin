@@ -2,7 +2,7 @@
 [![CircleCI][circleci-img]][circleci-url]
 
 
-Webpack plugin that allows to cache generated assets in your on service worker.
+Webpack plugin that allows to cache generated assets in your own service worker.
 
 
 Description
