@@ -148,6 +148,36 @@ test('given an Array should format as string with apostrophes', t => {
   t.is(str,strExpected);
 });
 
+test('given additionals URI add the origin path to show in the cache entries final report', t => {
+  const plugin = new SwCachePlugin(pluginOptions);
+  const additional = '/';
+  const expected = 'http://localhost:4200/';
+  const publicPath = 'http://localhost:4200/dist/';
+  const withPath = plugin.addOriginPath(additional,publicPath);
+
+  t.deepEqual(withPath,expected);
+});
+
+test('given additionals URI with host format should return the same URI', t => {
+  const plugin = new SwCachePlugin(pluginOptions);
+  const additional = 'http://localhost:4200/find';
+  const expected = 'http://localhost:4200/find';
+  const publicPath = 'http://localhost:4200/dist/';
+  const withPath = plugin.addOriginPath(additional,publicPath);
+
+  t.deepEqual(withPath,expected);
+});
+
+test('given an array of cache entries should format to show the final entries on cache', t => {
+  const plugin = new SwCachePlugin(pluginOptions);
+  const cacheEntries = ['http://localhost:4200/app-b8305b0556d22425eb92.js','/find'];
+  const expected = ['http://localhost:4200/app-b8305b0556d22425eb92.js','http://localhost:4200/find'];
+  const publicPath = 'http://localhost:4200/dist/';
+  const urlsToShowActual = plugin.formatToShow(cacheEntries,publicPath);
+
+  t.deepEqual(expected,urlsToShowActual);
+});
+
 test.cb('should generate AssetsManager file', t => {  
   const compiler = webpack(webpackConfig());
   const config = webpackConfig();  

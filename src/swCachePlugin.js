@@ -97,6 +97,25 @@ class SwCachePlugin {
         return withFormat;
     }
 
+    addOriginPath(_url = '',publicPath = ''){
+        const parsedUrl = URL.parse(_url);
+        if(parsedUrl.host)
+            return parsedUrl.href;
+
+        const _originPath = URL.parse(publicPath);
+        const mainUrl = `${_originPath.protocol}//${_originPath.host}`;
+        const completeUrl = URL.resolve(mainUrl,_url);
+        return completeUrl;
+    }
+
+    formatToShow(urls = [], publicPath = ''){
+        const _urls = urls.map(url => {
+            return this.addOriginPath(url,publicPath);
+        });
+
+        return _urls;
+    }
+
     apply(compiler) {
 
         compiler.plugin('done', (stats) => {
@@ -111,17 +130,19 @@ class SwCachePlugin {
             const hashesToSave = this.getHashesToSave(filteredAssets,hash);
             const cacheEntries = this.setPathToAssets(publicPath,filteredAssets);
             const cacheEntries_ = this.addAdditionalPaths(additionals,cacheEntries);
-
+            
             const templateInfo = {
                 cacheEntries:this.arrayToString(cacheEntries_),
                 cacheName:cacheName,
                 hashes:this.arrayToString(hashesToSave)
             }
-            
+
+            const urlsToShow = this.formatToShow(cacheEntries_,publicPath);
+
             this.getCacheTemplate()
                 .then(fileTemplate => this.populateTemplate(fileTemplate)(templateInfo))
                 .then(templateWithData => this.writeCacheFile(templateWithData)(outputPath))
-                .then(success => {this.showCacheEntries(console.log,cacheEntries_)},
+                .then(success => {this.showCacheEntries(console.log,urlsToShow)},
                       err => {throw new Error(err)});
         });
     }
