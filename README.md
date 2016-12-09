@@ -25,7 +25,7 @@ plugins: [
       {
         cacheName:'cacheName',
         ignore: [/.*\.map$/],
-        include: ['http://localhost:3000/','http://localhost:30000/additional']
+        include: ['/','/additional']
       }
     )
   ]
