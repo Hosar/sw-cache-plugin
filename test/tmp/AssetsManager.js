@@ -1,8 +1,8 @@
 
 var AssetsManager = function() {
     this.cacheName = 'coffeB_Cache'; 
-    this.cacheEntries = ['http://localhost:4200/dist/main-1b8407ce8ea4ef023195.js','http://localhost:4200/'];
-    this.hashes = ['1b8407ce8ea4ef023195'];
+    this.cacheEntries = ['http://localhost:4200/dist/main-398ea0a56a030d6ca0d8.js','http://localhost:4200/'];
+    this.hashes = ['398ea0a56a030d6ca0d8'];
 };
 
 AssetsManager.prototype.addAllToCache = function() {

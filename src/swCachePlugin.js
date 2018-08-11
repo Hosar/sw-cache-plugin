@@ -16,7 +16,8 @@ class SwCachePlugin {
     constructor(options) {
         this.options = {
             ...options,
-        }        
+        }
+        this.pluginName = 'SwCachePlugin';
     }
 
     ignoreAssets(assets){
@@ -79,7 +80,9 @@ class SwCachePlugin {
     }   
 
     getHashesToSave(assets,hash){
-        const hashes = assets.reduce((acc,asset) => {            
+        const noChunks = 2;
+        const assetsWithoutChunks = assets.filter(asset => asset.split('.').length === noChunks);
+        const hashes = assetsWithoutChunks.reduce((acc,asset) => {            
             if(!asset.includes(hash)){
                 const parts = asset.split('.');
                 acc.push(parts[0]);
@@ -118,23 +121,24 @@ class SwCachePlugin {
 
     apply(compiler) {
 
-        compiler.plugin('done', (stats) => {
-            // get the output path specified in webpack config
+        compiler.hooks.afterEmit.tapAsync({
+            name: this.pluginName
+        } ,(compilation, callback) => {
+            const hash = compilation.hash;
             const outputPath = compiler.options.output.path;
-            const hash = stats.hash;
             const publicPath = compiler.options.output.publicPath;
             const additionals = this.options.include;
             const cacheName = this.options.cacheName;
-            const assets = Object.keys(stats.compilation.assets) || [];
+            const assets = Object.keys(compilation.assets) || [];
             const filteredAssets = this.ignoreAssets(assets);
-            const hashesToSave = this.getHashesToSave(filteredAssets,hash);
+            const hashesToSave = this.getHashesToSave(filteredAssets, hash);
             const cacheEntries = this.setPathToAssets(publicPath,filteredAssets);
             const cacheEntries_ = this.addAdditionalPaths(additionals,cacheEntries);
             
             const templateInfo = {
-                cacheEntries:this.arrayToString(cacheEntries_),
-                cacheName:cacheName,
-                hashes:this.arrayToString(hashesToSave)
+                cacheEntries: this.arrayToString(cacheEntries_),
+                cacheName: cacheName,
+                hashes: this.arrayToString(hashesToSave)
             }
 
             const urlsToShow = this.formatToShow(cacheEntries_,publicPath);
@@ -142,8 +146,10 @@ class SwCachePlugin {
             this.getCacheTemplate()
                 .then(fileTemplate => this.populateTemplate(fileTemplate)(templateInfo))
                 .then(templateWithData => this.writeCacheFile(templateWithData)(outputPath))
-                .then(success => {this.showCacheEntries(console.log,urlsToShow)},
+                .then(success => {this.showCacheEntries(console.log, urlsToShow)},
                       err => {throw new Error(err)});
+            
+            callback();
         });
     }
 }

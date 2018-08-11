@@ -5,6 +5,7 @@ import SwCachePlugin from '../src/index.js';
 import $debug from 'debug';
 import sinon from 'sinon';
 import fs from 'fs';
+import { webpack4Assets } from './stubs/asset';
 
 const debug = $debug('test');
 
@@ -134,6 +135,19 @@ test('should get the hashes that identify the request to save in cache', t => {
                           "e02a995e6786d8aa55ee397094f88d16"];
 
   const hashesActual = plugin.getHashesToSave(assets,hash);
+  t.deepEqual(hashesActual,hashesExpected);
+});
+
+test('should get the hashes that identify the request to save in cache, for webpack4', t => {
+  const plugin = new SwCachePlugin(pluginOptions);
+  const hash = '0c9fe69fceef3af0289f';
+  const hashesExpected = [ '0c9fe69fceef3af0289f',
+                           'app-54331a3c4d65ab4c39e1',
+                           'sw-54331a3c4d65ab4c39e1',
+                           'swRegistry-54331a3c4d65ab4c39e1',
+                           'vendor-54331a3c4d65ab4c39e1' ];
+
+  const hashesActual = plugin.getHashesToSave(webpack4Assets, hash);
   t.deepEqual(hashesActual,hashesExpected);
 });
 
