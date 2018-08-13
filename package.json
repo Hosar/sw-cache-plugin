@@ -5,8 +5,11 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "DEBUG=test,app ava --verbose",
-    "prepublish": "babel src --out-dir lib",    
-    "build": "babel src --out-dir lib && mkdir lib/template && cp src/template/sw-cache.tmpl lib/template"
+    "prepublish": "babel src --out-dir lib",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:mayor": "npm version mayor && npm publish",
+    "build": "rm lib/template -rf && babel src --out-dir lib && mkdir lib/template && cp src/template/sw-cache.tmpl lib/template"
   },
   "repository": {
     "type": "git",
@@ -43,7 +46,8 @@
     "debug": "^2.3.3",
     "lodash.defaults": "^4.2.0",
     "lodash.template": "^4.4.0",
-    "webpack": "^1.13.3"
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
   },
   "devDependencies": {
     "ava": "^0.17.0",
