@@ -183,7 +183,7 @@ test('given additionals URI with host format should return the same URI', t => {
   t.deepEqual(withPath, expected);
 });
 
-test('given anheme+vscode&oq= array of cache entries should format to show the final entries on cache', t => {
+test('given an array of cache entries should format to show the final entries on cache', t => {
   const plugin = new SwCachePlugin(pluginOptions);
   const cacheEntries = ['http://localhost:4200/app-b8305b0556d22425eb92.js', '/find'];
   const expected = ['http://localhost:4200/app-b8305b0556d22425eb92.js', 'http://localhost:4200/find'];
