@@ -9,7 +9,7 @@
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:mayor": "npm version mayor && npm publish",
-    "build": "babel src --out-dir lib && mkdir lib/template && cp src/template/sw-cache.tmpl lib/template"
+    "build": "rm lib/template -rf && babel src --out-dir lib && mkdir lib/template && cp src/template/sw-cache.tmpl lib/template"
   },
   "repository": {
     "type": "git",

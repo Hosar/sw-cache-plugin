@@ -6,6 +6,7 @@ import URL from 'url';
 import $debug from 'debug';
 import chalk from 'chalk';
 import TemplateCreatorW4 from './TemplateCreatorW4';
+import TemplateCreatorW2 from './TemplateCreatorW2';
 
 Promise.promisifyAll(fs);
 const debug = $debug('app');
@@ -128,10 +129,10 @@ class SwCachePlugin {
 
     apply(compiler) {
         let templateCreator = this.getTemplateCreator(compiler);
-        const fn = (compiler, compilation, callback) => {
-            const outputPath = compiler.options.output.path;
+        const buildSwTemplate = (_compiler, compilation, callback) => {
+            const outputPath = _compiler.options.output.path;
             const hash = compilation.hash;
-            const publicPath = compiler.options.output.publicPath;
+            const publicPath = _compiler.options.output.publicPath;
             const additionals = this.options.include;
             const cacheName = this.options.cacheName;
             const _assets = templateCreator.getAssets();
@@ -158,7 +159,7 @@ class SwCachePlugin {
             callback();
         };
 
-        templateCreator.createTemplate(fn);
+        templateCreator.createTemplate(buildSwTemplate);
     }
 }
 
