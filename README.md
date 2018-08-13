@@ -8,8 +8,10 @@ Webpack plugin that allows to cache generated assets in your own service worker.
 Description
 -------
 Inspired by @goldhand [SWPrecacheWebpackPlugin][sw-precache-webpack], for most all the cases [SWPrecacheWebpackPlugin][sw-precache-webpack] is the right choice. Use this plugin when you have your
-**own** [service worker][0e425270] and you need to cache the Webpack generated assets which already include
-a versioning hash.
+**own** [service worker][0e425270] and you need to cache the Webpack generated assets which already include a versioning hash.
+
+## Version 1.0.0
+Includes support for Webpack 4.16.5
 
 ## Install
 `npm install sw-cache-plugin --save-dev`
@@ -42,13 +44,13 @@ importScripts('/dist/AssetsManager.js');
 let assetsManager = new AssetsManager(); //create an instance of AssetsManager
 
 //save the url-assets in cache
-self.addEventListener('install', (event) => {  
+self.addEventListener('install', (event) => {
   event.waitUntil(assetsManager.addAllToCache());
 });
 ```
 Or remove:
 ```
-self.addEventListener('activate', event => {  
+self.addEventListener('activate', event => {
   event.waitUntil(assetsManager.removeNotInAssets());
 });
 ```
@@ -70,7 +72,7 @@ self.addEventListener('activate', event => {
 
 **Webpack dev server support:**
 - add [write-file-webpack-plugin][69fb7c2c] to work with webpack dev server.
- 
+
 
   [69fb7c2c]: https://github.com/gajus/write-file-webpack-plugin "write-file-plugin"
 
