@@ -153,8 +153,11 @@ class SwCachePlugin {
             this.getCacheTemplate()
                 .then(fileTemplate => this.populateTemplate(fileTemplate)(templateInfo))
                 .then(templateWithData => this.writeCacheFile(templateWithData)(outputPath))
-                .then(success => { this.showCacheEntries(console.log, urlsToShow) },
-                    err => { throw new Error(err) });
+                .then(success => { this.showCacheEntries(console.log, urlsToShow) })
+                .catch(ex => {
+                    chalk.red(ex.message)
+                    throw new Error(ex.message)
+                })
 
             callback();
         };
