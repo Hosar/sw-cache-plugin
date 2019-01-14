@@ -1,3 +1,4 @@
+// @flow
 import path from 'path';
 import Promise from 'bluebird';
 import template from 'lodash.template';
@@ -5,33 +6,52 @@ import fs from 'fs';
 import URL from 'url';
 import $debug from 'debug';
 import chalk from 'chalk';
+import { compiler } from 'webpack';
 import TemplateCreatorW4 from './TemplateCreatorW4';
 import TemplateCreatorW2 from './TemplateCreatorW2';
 
-Promise.promisifyAll(fs);
+const fsAsync: any = Promise.promisifyAll(fs);
 const debug = $debug('app');
 
 const toClass = {}.toString;
+type UsrOptions = {
+    cacheName: string,
+    ignore: Array<RegExp>,
+    include: Array<string>
+}
+
+type TemplateInfo = {
+    cacheEntries: string,
+    cacheName: string,
+    hashes: string
+}
 
 class SwCachePlugin {
-    constructor(options) {
+    options: UsrOptions;
+    pluginName: string;
+
+    constructor(options : UsrOptions) {
         this.options = {
             ...options,
         }
         this.pluginName = 'SwCachePlugin';
     }
 
-    ignoreAssets(assets) {
+    ignoreAssets(assets: Array<string>): Array<string> {
         this.validateType(this.options.ignore, 'Array', 'Ignore must be an array');
-        const ignorePatterns = this.options.ignore || [];
+        const ignorePatterns: Array<RegExp> = this.options.ignore || [];
 
-        if (ignorePatterns)
-            return (assets.filter(text => !ignorePatterns.some(regex => regex.test(text))));
+        if (ignorePatterns) {
+            const ignore: Array<string> = assets.filter(
+                (text: string): boolean => !ignorePatterns.some((regex: RegExp): boolean => regex.test(text))
+            )
+            return ignore;
+        }
 
         return assets;
     }
 
-    validateType(value, type, message) {
+    validateType(value: Array<any>, type: string, message: string): void {
         if (!value)
             return;
 
@@ -40,7 +60,7 @@ class SwCachePlugin {
             throw new Error(message);
     }
 
-    addAdditionalPaths(additionals, assets) {
+    addAdditionalPaths(additionals: Array<string>, assets: Array<string>): Array<string> {
         this.validateType(additionals, 'Array', 'Extras must be an array');
         if (!additionals)
             return assets;
@@ -48,39 +68,39 @@ class SwCachePlugin {
         return assets.concat(additionals);
     }
 
-    setPathToAssets(publicPath, assets) {
+    setPathToAssets(publicPath: string, assets: Array<string>): Array<string> {
         const assetGlobs = assets.map(f => URL.resolve(publicPath, f));
         return assetGlobs;
     }
 
-    getCacheTemplate() {
+    getCacheTemplate(): Promise<string> {
         const filePath = path.join(__dirname, 'template/sw-cache.tmpl');
-        return fs.readFileAsync(filePath, 'utf-8');
+        return fsAsync.readFileAsync(filePath, 'utf-8');
     }
 
-    writeCacheFile(templateWithData) {
-        return function (outputPath) {
+    writeCacheFile(templateWithData: string) {
+        return function (outputPath: string) {
             const filePath = path.join(outputPath, '/AssetsManager.js');
-            return fs.writeFileAsync(filePath, templateWithData);
+            return fsAsync.writeFileAsync(filePath, templateWithData);
         }
     }
 
-    populateTemplate(fileTemplate) {
-        return function (data) {
+    populateTemplate(fileTemplate: string) {
+        return function (data: TemplateInfo) {
             return new Promise((resolve, reject) => {
                 resolve(template(fileTemplate)(data));
             });
         }
     }
 
-    showCacheEntries(log, cacheEntries) {
+    showCacheEntries(log: Function, cacheEntries: Array<string>) {
         log(chalk.blue('Cache entries:'));
         cacheEntries.map((entry) => {
             log(chalk.green(entry));
         });
     }
 
-    getHashesToSave(assets, hash) {
+    getHashesToSave(assets: Array<string>, hash: string) {
         const noChunks = 2;
         const assetsWithoutChunks = assets.filter(asset => asset.split('.').length === noChunks);
         const hashes = assetsWithoutChunks.reduce((acc, asset) => {
@@ -93,7 +113,7 @@ class SwCachePlugin {
         return hashes;
     }
 
-    arrayToString(arr) {
+    arrayToString(arr: Array<string>): string {
         const withFormat = arr.map((a) => {
             return '\'' + a + '\'';
         }).join(',');
@@ -101,33 +121,33 @@ class SwCachePlugin {
         return withFormat;
     }
 
-    addOriginPath(_url = '', publicPath = '') {
+    addOriginPath(_url: string = '', publicPath: string = ''): string {
         const parsedUrl = URL.parse(_url);
         if (parsedUrl.host)
             return parsedUrl.href;
 
         const _originPath = URL.parse(publicPath);
-        const mainUrl = `${_originPath.protocol}//${_originPath.host}`;
+        const mainUrl: string = `${_originPath.protocol || ''}//${_originPath.host || ''}`;
         const completeUrl = URL.resolve(mainUrl, _url);
         return completeUrl;
     }
 
-    formatToShow(urls = [], publicPath = '') {
-        const _urls = urls.map(url => {
+    formatToShow(urls: Array<string> = [], publicPath: string = '') {
+        const _urls: Array<string> = urls.map((url: string): string => {
             return this.addOriginPath(url, publicPath);
         });
 
         return _urls;
     }
 
-    getTemplateCreator(compiler) {
+    getTemplateCreator(compiler: compiler) {
         if(!compiler.hooks){
             return new TemplateCreatorW2(compiler);
         }
         return new TemplateCreatorW4(compiler);
     }
 
-    apply(compiler) {
+    apply(compiler: compiler) {
         let templateCreator = this.getTemplateCreator(compiler);
         const buildSwTemplate = (_compiler, compilation, callback) => {
             const outputPath = _compiler.options.output.path;
@@ -142,7 +162,7 @@ class SwCachePlugin {
             const cacheEntries = this.setPathToAssets(publicPath, filteredAssets);
             const cacheEntries_ = this.addAdditionalPaths(additionals, cacheEntries);
 
-            const templateInfo = {
+            const templateInfo: TemplateInfo = {
                 cacheEntries: this.arrayToString(cacheEntries_),
                 cacheName: cacheName,
                 hashes: this.arrayToString(hashesToSave)
@@ -153,13 +173,12 @@ class SwCachePlugin {
             this.getCacheTemplate()
                 .then(fileTemplate => this.populateTemplate(fileTemplate)(templateInfo))
                 .then(templateWithData => this.writeCacheFile(templateWithData)(outputPath))
-                .then(success => { this.showCacheEntries(console.log, urlsToShow) })
+                .then(() => this.showCacheEntries(console.log, urlsToShow))
                 .catch(ex => {
                     chalk.red(ex.message)
                     throw new Error(ex.message)
                 })
-
-            callback();
+                .then(callback, callback)
         };
 
         templateCreator.createTemplate(buildSwTemplate);
