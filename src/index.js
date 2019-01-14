@@ -1,3 +1,3 @@
-import SwCachePlugin from './swCachePlugin';
+import SwCachePlugin from './swCachePlugin'
 
-module.exports = SwCachePlugin;
+module.exports = SwCachePlugin
