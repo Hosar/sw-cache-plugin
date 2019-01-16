@@ -209,10 +209,9 @@ test.cb('should generate AssetsManager file', t => {
   plugin.apply(compiler);
 
   compiler.run((err, stats) => {
-    t.ifError(err, `compiler error: ${err}`);
+    t.falsy(err, `compiler error: ${err}`);
     t.is(typeof stats, 'object');
-    const fPath = path.resolve(__dirname, 'tmp/service-worker.js');
-    t.end();
+    const fPath = path.resolve(__dirname, 'tmp/AssetsManager.js');
 
     fsExists(fPath).then(e => {
       t.truthy(e);
